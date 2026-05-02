@@ -1,4 +1,4 @@
-import { getAllBooks } from '../db.js'
+import { getAllBooks, getReadingLogsByBook } from '../db.js'
 import { getCurrentYear, statusLabel } from '../utils.js'
 
 export function renderStatsPage() {
@@ -98,19 +98,15 @@ let storeLogs = {}
 
 export async function setupStatsPage() {
   storeBooks = await getAllBooks()
-  // Get all reading logs grouped by book
-  const { getAll } = await import('../db.js')
-  const db = await (await import('../utils.js')).getDB?.() || null
 
   // Build chart instances
   const monthlyData = Array(12).fill(0)
   const doneBooks = storeBooks.filter(b => b.status === 'done')
   const year = getCurrentYear()
 
-  // We need logs for monthly data
+  // Get logs for monthly data
   const logs = []
   for (const book of storeBooks) {
-    const { getReadingLogsByBook } = await import('../db.js')
     const bookLogs = await getReadingLogsByBook(book.id)
     storeLogs[book.id] = bookLogs
     logs.push(...bookLogs)

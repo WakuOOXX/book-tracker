@@ -1,8 +1,8 @@
 import { router } from '../router.js'
 import { getBook, addBook, updateBook } from '../db.js'
 import { autoCategorize, escapeHtml } from '../utils.js'
-
 import { showToast } from '../components/Toast.js'
+import { recognizeImage, fileToBase64, compressImage } from '../ocr.js'
 
 export function renderBookFormPage(params) {
   const bookId = params?.id ? parseInt(params.id) : null
@@ -130,16 +130,178 @@ export function setupBookFormPage(params) {
     })
   })
 
-  // OCR buttons (placeholder - will implement in Phase 4)
-  document.getElementById('ocr-camera')?.addEventListener('click', () => {
-    showToast('拍照功能将在 Phase 4 实现', 'info')
-  })
-  document.getElementById('ocr-gallery')?.addEventListener('click', () => {
-    showToast('相册功能将在 Phase 4 实现', 'info')
-  })
-  document.getElementById('ocr-paste')?.addEventListener('click', () => {
-    showToast('粘贴功能将在 Phase 4 实现', 'info')
-  })
+  // ── OCR: Camera ──
+  const cameraBtn = document.getElementById('ocr-camera')
+  if (cameraBtn) {
+    cameraBtn.addEventListener('click', async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        // 创建一个隐藏的 video 元素拍照
+        const video = document.createElement('video')
+        video.srcObject = stream
+        video.setAttribute('playsinline', '')
+        video.setAttribute('autoplay', '')
+        video.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px'
+        document.body.appendChild(video)
+
+        await new Promise(resolve => { video.onloadedmetadata = resolve })
+
+        // 显示拍照预览
+        const previewEl = document.getElementById('ocr-preview')
+        const statusEl = document.getElementById('ocr-status')
+        previewEl.classList.remove('hidden')
+        statusEl.textContent = '📸 请对准书籍拍照...'
+
+        // 切换按钮为拍照模式
+        cameraBtn.textContent = '📷 拍照'
+        cameraBtn.onclick = () => {
+          const canvas = document.createElement('canvas')
+          canvas.width = video.videoWidth
+          canvas.height = video.videoHeight
+          canvas.getContext('2d').drawImage(video, 0, 0)
+          canvas.toBlob(async (blob) => {
+            // 停止摄像头
+            stream.getTracks().forEach(t => t.stop())
+            video.remove()
+
+            statusEl.textContent = '🔄 识别中...'
+            cameraBtn.textContent = '📸 拍照'
+            cameraBtn.onclick = null // reset
+
+            await processImageForOCR(blob)
+          }, 'image/jpeg', 0.85)
+        }
+      } catch (err) {
+        if (err.name === 'NotAllowedError') {
+          showToast('请允许使用摄像头权限', 'warning')
+        } else if (err.name === 'NotFoundError') {
+          showToast('未检测到摄像头', 'warning')
+        } else {
+          showToast('拍照启动失败: ' + err.message, 'error')
+        }
+      }
+    })
+  }
+
+  // ── OCR: Gallery ──
+  const galleryBtn = document.getElementById('ocr-gallery')
+  if (galleryBtn) {
+    galleryBtn.addEventListener('click', () => {
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = 'image/*'
+      input.multiple = true
+      input.onchange = async (e) => {
+        const files = Array.from(e.target.files)
+        if (files.length === 0) return
+
+        const previewEl = document.getElementById('ocr-preview')
+        const statusEl = document.getElementById('ocr-status')
+        previewEl.classList.remove('hidden')
+
+        for (let i = 0; i < files.length; i++) {
+          statusEl.textContent = `🔄 正在识别第 ${i + 1}/${files.length} 张...`
+          await processImageForOCR(files[i], i > 0)
+        }
+        statusEl.textContent = '✅ 识别完成'
+      }
+      input.click()
+    })
+  }
+
+  // ── OCR: Paste ──
+  const pasteBtn = document.getElementById('ocr-paste')
+  if (pasteBtn) {
+    pasteBtn.addEventListener('click', async () => {
+      try {
+        const items = await navigator.clipboard.read()
+        let found = false
+        for (const item of items) {
+          const imageType = item.types.find(t => t.startsWith('image/'))
+          if (imageType) {
+            const blob = await item.getType(imageType)
+            const previewEl = document.getElementById('ocr-preview')
+            const statusEl = document.getElementById('ocr-status')
+            previewEl.classList.remove('hidden')
+            statusEl.textContent = '🔄 识别中...'
+            await processImageForOCR(blob)
+            statusEl.textContent = '✅ 识别完成'
+            found = true
+            break
+          }
+        }
+        if (!found) {
+          showToast('剪贴板中没有图片，请先截图再粘贴', 'warning')
+        }
+      } catch (err) {
+        if (err.name === 'NotAllowedError') {
+          showToast('请允许剪贴板读取权限', 'warning')
+        } else {
+          showToast('粘贴读取失败: ' + err.message, 'error')
+        }
+      }
+    })
+  }
+
+  // ── OCR helper: process an image blob ──
+  async function processImageForOCR(blob, isAdditional = false) {
+    try {
+      const base64 = await fileToBase64(blob)
+      const compressed = await compressImage(base64)
+      const results = await recognizeImage(compressed)
+
+      if (!results || results.length === 0) {
+        showToast('未识别出书籍信息，请手动输入', 'warning')
+        return
+      }
+
+      const resultsContainer = document.getElementById('ocr-results')
+
+      // 如果已有多本书的识别结果，追加
+      if (isAdditional) {
+        // Just add results
+      } else {
+        // 首次识别：清空并填充
+        resultsContainer.innerHTML = ''
+      }
+
+      let firstTitle = ''
+      for (const book of results) {
+        if (!book.title) continue
+
+        const category = book.title ? autoCategorize(book.title, book.author) : '其他'
+
+        if (!firstTitle) {
+          firstTitle = book.title
+          // 填充主表单
+          document.getElementById('field-title').value = book.title || ''
+          document.getElementById('field-author').value = book.author || ''
+          document.getElementById('field-category').value = category
+        }
+
+        const card = document.createElement('div')
+        card.className = 'flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 text-sm'
+        card.innerHTML = `
+          <div>
+            <span class="font-medium">${escapeHtml(book.title)}</span>
+            ${book.author ? `<span class="text-gray-500 ml-2">${escapeHtml(book.author)}</span>` : ''}
+            <span class="text-xs text-indigo-500 ml-2">${category}</span>
+          </div>
+          <span class="text-green-500 text-xs">✅ 已识别</span>
+        `
+        resultsContainer.appendChild(card)
+      }
+
+      // 显示缩略图
+      const img = document.createElement('img')
+      img.src = 'data:image/jpeg;base64,' + (await compressImage(base64, 200, 0.6))
+      img.className = 'w-full rounded-lg mt-2 max-h-32 object-contain bg-gray-50'
+      resultsContainer.appendChild(img)
+    } catch (err) {
+      showToast('OCR 识别失败: ' + err.message, 'error')
+      throw err
+    }
+  }
 
   // If editing, load existing data
   if (isEdit) {
