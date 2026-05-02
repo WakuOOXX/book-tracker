@@ -8,6 +8,7 @@ class Store {
       readingLogs: [],
       filter: 'all',       // all | wish | reading | done
       searchQuery: '',
+      sortBy: localStorage.getItem('book-sort') || 'date-desc',
       currentBook: null,
       currentLog: null
     }

@@ -337,6 +337,7 @@ export function setupBookFormPage(params) {
         if (isEdit) {
           await updateBook(bookId, book)
           showToast('更新成功', 'success')
+          router.navigate(`book/${bookId}`)
         } else {
           const newBook = await addBook(book)
           // If status is 'done' or 'reading', auto-create a reading log

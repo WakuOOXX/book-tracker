@@ -14,7 +14,7 @@
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .fab-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.9) !important;
   box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
 }
 
@@ -36,10 +36,64 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Book card hover */
+/* Book card */
 .book-card {
   transition: transform 0.15s, box-shadow 0.15s;
 }
 .book-card:active {
-  transform: scale(0.98);
+  transform: scale(0.97) !important;
+}
+
+/* Safe area for bottom nav on modern phones */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Mobile bottom nav spacing */
+@media (max-width: 767px) {
+  #app-content {
+    padding-bottom: 4rem;
+  }
+}
+
+/* Touch-friendly: prevent text selection on interactive elements */
+button, select, .book-card, .nav-btn {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Dark mode support (future) */
+@media (prefers-color-scheme: dark) {
+  /* Placeholder for future dark mode */
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Pull to refresh - iOS style bounce */
+body {
+  overscroll-behavior: none;
+}
+
+/* Rating star tap area */
+.rating-star {
+  min-width: 48px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+.rating-star:active {
+  transform: scale(1.3);
+}
+/* Page action buttons spacing on mobile */
+@media (max-width: 767px) {
+  .action-btn-stack button, .action-btn-stack label {
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+    font-size: 15px !important;
+  }
 }
