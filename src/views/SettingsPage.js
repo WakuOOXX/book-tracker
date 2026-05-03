@@ -58,7 +58,7 @@ export function renderSettingsPage() {
 
       <!-- About -->
       <div class="text-center text-xs text-gray-400 py-4">
-        <p>📖 读书笔记 v1.0</p>
+        <p>📖 读书笔记 v1.2</p>
         <p>数据仅存储在本地浏览器</p>
       </div>
     </div>

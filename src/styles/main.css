@@ -49,30 +49,16 @@
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Mobile bottom nav spacing */
-@media (max-width: 767px) {
-  #app-content {
-    padding-bottom: 4rem;
-  }
-}
-
-/* Touch-friendly: prevent text selection on interactive elements */
+/* Touch-friendly */
 button, select, .book-card, .nav-btn {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-}
-
-/* Dark mode support (future) */
-@media (prefers-color-scheme: dark) {
-  /* Placeholder for future dark mode */
 }
 
 /* Smooth scroll */
 html {
   scroll-behavior: smooth;
 }
-
-/* Pull to refresh - iOS style bounce */
 body {
   overscroll-behavior: none;
 }
@@ -88,12 +74,4 @@ body {
 }
 .rating-star:active {
   transform: scale(1.3);
-}
-/* Page action buttons spacing on mobile */
-@media (max-width: 767px) {
-  .action-btn-stack button, .action-btn-stack label {
-    padding-top: 14px !important;
-    padding-bottom: 14px !important;
-    font-size: 15px !important;
-  }
 }

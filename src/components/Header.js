@@ -7,14 +7,15 @@ const NAV_ITEMS = [
   { hash: 'settings', label: '设置', icon: '⚙️' }
 ]
 
-/**
- * Desktop: top header nav
- * Mobile: bottom tab bar (fixed)
- * Detected by tailwind breakpoints
- */
-export function renderHeader() {
-  const currentPath = router.currentRoute?.path || 'home'
+function isActive(hash, currentPath) {
+  if (hash === 'home') {
+    return currentPath === 'home' || currentPath === '' || currentPath?.startsWith('book')
+  }
+  return currentPath === hash
+}
 
+export function renderTopHeader() {
+  const currentPath = router.currentRoute?.path || 'home'
   return `
     <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
       <div class="max-w-3xl mx-auto px-4">
@@ -22,13 +23,12 @@ export function renderHeader() {
           <div class="flex items-center gap-2">
             <h1 class="text-lg font-bold text-indigo-600 select-none">📖 读书笔记</h1>
           </div>
-          <!-- Desktop nav (hidden on mobile, shown on md+) -->
+          <!-- Desktop nav -->
           <nav class="hidden md:flex gap-1">
             ${NAV_ITEMS.map(item => {
-              const isActive = currentPath === item.hash || (item.hash === 'home' && currentPath === 'home')
+              const active = isActive(item.hash, currentPath)
               return `<button
-                class="nav-btn px-3 py-1.5 rounded-lg text-sm transition-all select-none
-                  ${isActive ? 'bg-indigo-100 text-indigo-700 font-medium shadow-sm' : 'text-gray-500 hover:bg-gray-100'}"
+                class="nav-btn px-3 py-1.5 rounded-lg text-sm transition-all select-none ${active ? 'bg-indigo-100 text-indigo-700 font-medium shadow-sm' : 'text-gray-500 hover:bg-gray-100'}"
                 data-nav="${item.hash}"
               >${item.icon} ${item.label}</button>`
             }).join('')}
@@ -36,19 +36,23 @@ export function renderHeader() {
         </div>
       </div>
     </header>
-    <!-- Mobile bottom nav (hidden on md+, shown on mobile) -->
-    <nav id="mobile-bottom-nav" class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-200 safe-area-bottom">
+  `
+}
+
+export function renderBottomNav() {
+  const currentPath = router.currentRoute?.path || 'home'
+  return `
+    <nav id="mobile-nav" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 safe-area-bottom shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
       <div class="flex items-center justify-around h-14 px-2">
         ${NAV_ITEMS.map(item => {
-          const isActive = currentPath === item.hash || (item.hash === 'home' && currentPath === 'home')
+          const active = isActive(item.hash, currentPath)
           return `<button
-            class="nav-btn flex flex-col items-center justify-center flex-1 h-full rounded-lg transition-all select-none
-              ${isActive ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'}"
+            class="nav-btn flex flex-col items-center justify-center flex-1 h-full transition-all select-none py-1 relative"
             data-nav="${item.hash}"
           >
-            <span class="text-xl leading-none">${item.icon}</span>
-            <span class="text-[10px] mt-0.5 font-medium ${isActive ? 'text-indigo-600' : 'text-gray-400'}">${item.label}</span>
-            ${isActive ? '<span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-indigo-600 rounded-full"></span>' : ''}
+            <span class="text-xl leading-none mb-0.5">${item.icon}</span>
+            <span class="text-[10px] font-medium ${active ? 'text-indigo-600' : 'text-gray-400'}">${item.label}</span>
+            ${active ? '<span class="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-indigo-600 rounded-full"></span>' : ''}
           </button>`
         }).join('')}
       </div>
@@ -64,11 +68,11 @@ export function setupHeaderEvents() {
   })
 }
 
-// Listen for route changes to update header active state
+// Only re-render header/nav when route changes
 router.onNavigate = () => {
-  const headerEl = document.querySelector('#app-header')
-  if (headerEl) {
-    headerEl.innerHTML = renderHeader()
-    setupHeaderEvents()
-  }
+  const topEl = document.querySelector('#app-top-header')
+  const navEl = document.querySelector('#app-bottom-nav')
+  if (topEl) topEl.innerHTML = renderTopHeader()
+  if (navEl) navEl.innerHTML = renderBottomNav()
+  setupHeaderEvents()
 }

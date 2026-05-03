@@ -96,7 +96,7 @@ export function renderHomePage() {
       `}
 
       <!-- FAB -->
-      <button id="add-book-btn" class="fab-btn fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full flex items-center justify-center text-2xl shadow-lg hover:bg-indigo-700 active:scale-90 transition-transform z-30 select-none">
+      <button id="add-book-btn" class="fab-btn fixed bottom-20 md:bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full flex items-center justify-center text-2xl shadow-lg hover:bg-indigo-700 active:scale-90 transition-transform z-50 select-none">
         +
       </button>
     </div>

@@ -1,7 +1,7 @@
 {
   "name": "读书笔记",
   "short_name": "读书笔记",
-  "description": "个人读书记录应用",
+  "description": "个人读书记录应用 v1.2",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#f9fafb",
