@@ -1,4 +1,6 @@
 node_modules
 dist
 *.local
-check_templates.mjs
+.DS_Store
+*.log
+.vite
