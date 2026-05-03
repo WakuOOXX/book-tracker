@@ -5,7 +5,7 @@
 **扫书即记 · 离线优先 · 全渠道 OCR 录入**
 
 [![GitHub Pages](https://img.shields.io/badge/demo-online-blue?logo=github)](https://WakuOOXX.github.io/book-tracker/)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/WakuOOXX/book-tracker?style=social)](https://github.com/WakuOOXX/book-tracker)
 
 </div>
@@ -84,4 +84,4 @@ npm run build && npx serve dist   # 生产部署(PWA)
 
 ## 📄 许可证
 
-[MIT](LICENSE)
+[GNU General Public License v3.0](LICENSE)
