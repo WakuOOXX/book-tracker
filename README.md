@@ -71,6 +71,56 @@ npm run dev                # 开发模式(http://localhost:5173)
 npm run build && npx serve dist   # 生产部署(PWA)
 ```
 
+## 📱 Termux（Android）启动
+
+在安卓手机上通过 Termux 启动开发服务器，适合本地调试或离线开发。
+
+### 前置条件
+
+Termux 中需安装 Node.js：
+
+```bash
+pkg update && pkg upgrade -y
+pkg install nodejs git -y
+```
+
+### 启动步骤
+
+```bash
+# 1. 克隆项目
+git clone https://github.com/WakuOOXX/book-tracker.git
+cd book-tracker
+
+# 2. 安装依赖
+npm install
+
+# 3. 启动开发服务器（热点模式，局域网可访问）
+npm run dev -- --host 0.0.0.0
+```
+
+启动后在浏览器打开 `http://localhost:5173` 即可访问。若同一 Wi-Fi 下的其他设备（如平板、电脑）需要访问，查看 Termux 中打印的 Network URL（形如 `http://192.168.x.x:5173`）。
+
+### 生产模式（纯前端，无需 Node.js 运行）
+
+```bash
+# 生成 dist/ 目录
+npm run build
+
+# 用 serve 启动（需先安装）
+npx serve dist
+
+# 或用 Python（Termux 内置）
+python3 -m http.server 8080 -d dist
+```
+
+浏览器打开 `http://localhost:8080` 访问。
+
+### 注意事项
+
+- Termux 在 Android 12+ 上可能被系统杀后台 → 开启 Termux 的「省电策略 - 不限制」
+- 某些 ROM 需要开启「悬浮窗」/「后台弹出界面」权限保证常驻
+- 建议使用 [Termux:Widget](https://wiki.termux.com/wiki/Termux:Widget) 配置一键启动脚本
+
 ## 📦 部署
 
 纯前端应用,任意静态服务器均可托管:
