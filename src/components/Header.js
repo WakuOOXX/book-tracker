@@ -14,8 +14,12 @@ function isActive(hash, currentPath) {
   return currentPath === hash
 }
 
-export function renderTopHeader() {
-  const currentPath = router.currentRoute?.path || 'home'
+/**
+ * Render top header nav (desktop).
+ * @param {string} [currentPathOverride] - explicitly pass current route path
+ */
+export function renderTopHeader(currentPathOverride) {
+  const currentPath = currentPathOverride || router.currentRoute?.path || 'home'
   return `
     <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
       <div class="max-w-3xl mx-auto px-4">
@@ -39,20 +43,20 @@ export function renderTopHeader() {
   `
 }
 
-export function renderBottomNav() {
-  const currentPath = router.currentRoute?.path || 'home'
+export function renderBottomNav(currentPathOverride) {
+  const currentPath = currentPathOverride || router.currentRoute?.path || 'home'
   return `
     <nav id="mobile-nav" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 safe-area-bottom shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-      <div class="flex items-center justify-around h-14 px-2">
+      <div class="flex flex-nowrap items-stretch justify-around h-14 px-1 overflow-visible">
         ${NAV_ITEMS.map(item => {
           const active = isActive(item.hash, currentPath)
           return `<button
-            class="nav-btn flex flex-col items-center justify-center flex-1 h-full transition-all select-none py-1 relative"
+            class="nav-btn flex flex-col items-center justify-center flex-1 flex-shrink-0 min-w-0 h-full transition-all select-none py-1 relative"
             data-nav="${item.hash}"
           >
             <span class="text-xl leading-none mb-0.5">${item.icon}</span>
-            <span class="text-[10px] font-medium ${active ? 'text-indigo-600' : 'text-gray-400'}">${item.label}</span>
-            ${active ? '<span class="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-indigo-600 rounded-full"></span>' : ''}
+            <span class="text-[10px] font-medium whitespace-nowrap ${active ? 'text-indigo-600' : 'text-gray-400'}">${item.label}</span>
+            ${active ? '<span class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-indigo-600 rounded-full"></span>' : ''}
           </button>`
         }).join('')}
       </div>
@@ -69,10 +73,10 @@ export function setupHeaderEvents() {
 }
 
 // Only re-render header/nav when route changes
-router.onNavigate = () => {
+router.onNavigate = (path) => {
   const topEl = document.querySelector('#app-top-header')
   const navEl = document.querySelector('#app-bottom-nav')
-  if (topEl) topEl.innerHTML = renderTopHeader()
-  if (navEl) navEl.innerHTML = renderBottomNav()
+  if (topEl) topEl.innerHTML = renderTopHeader(path)
+  if (navEl) navEl.innerHTML = renderBottomNav(path)
   setupHeaderEvents()
 }

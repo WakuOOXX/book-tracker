@@ -15,9 +15,9 @@ import { showToast } from './components/Toast.js'
 const app = document.getElementById('app')
 app.innerHTML = `
   <div id="app-shell" class="min-h-screen flex flex-col">
-    <div id="app-top-header">${renderTopHeader()}</div>
+    <div id="app-top-header">${renderTopHeader('home')}</div>
     <main id="app-content" class="flex-1 pb-16 md:pb-0"></main>
-    <div id="app-bottom-nav">${renderBottomNav()}</div>
+    <div id="app-bottom-nav">${renderBottomNav('home')}</div>
   </div>
 `
 setupHeaderEvents()
