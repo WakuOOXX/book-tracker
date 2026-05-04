@@ -17,7 +17,7 @@ app.innerHTML = `
   <div id="app-shell" class="min-h-screen flex flex-col">
     <div id="app-top-header">${renderTopHeader('home')}</div>
     <main id="app-content" class="flex-1 pb-[calc(4rem+env(safe-area-inset-bottom,0px)+0.5rem)] md:pb-0"></main>
-    <div id="app-bottom-nav" class="w-0 h-0 overflow-hidden md:w-auto md:h-auto md:overflow-visible">${renderBottomNav('home')}</div>
+    <div id="app-bottom-nav" style="display:contents">${renderBottomNav('home')}</div>
   </div>
 `
 setupHeaderEvents()
