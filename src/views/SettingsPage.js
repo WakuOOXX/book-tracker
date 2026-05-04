@@ -7,12 +7,12 @@ export function renderSettingsPage() {
       <h2 class="text-lg font-bold mb-4">⚙️ 设置</h2>
 
       <!-- OCR API Config -->
-      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-4">
-        <h3 class="text-sm font-semibold text-gray-700 mb-3">📸 OCR 配置</h3>
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-4 max-w-md mx-auto">
+        <h3 class="text-sm font-semibold text-gray-700 mb-4 text-center">📸 OCR 配置</h3>
         <div class="space-y-3">
           <div>
             <label class="text-xs font-medium text-gray-600">服务商</label>
-            <select id="ocr-provider" class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
+            <select id="ocr-provider" class="w-full mt-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white">
               <option value="aliyun">阿里云文字识别</option>
               <option value="baidu">百度通用文字识别</option>
             </select>
@@ -20,14 +20,14 @@ export function renderSettingsPage() {
           <div>
             <label class="text-xs font-medium text-gray-600">API Key / AppKey</label>
             <input id="ocr-api-key" type="text" placeholder="请输入 API Key"
-              class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+              class="w-full mt-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
           </div>
           <div>
             <label class="text-xs font-medium text-gray-600">Secret Key</label>
             <input id="ocr-secret-key" type="password" placeholder="请输入 Secret Key"
-              class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+              class="w-full mt-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
           </div>
-          <button id="save-ocr-config" class="w-full py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
+          <button id="save-ocr-config" class="w-full py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 active:bg-indigo-800 transition-colors">
             保存配置
           </button>
         </div>

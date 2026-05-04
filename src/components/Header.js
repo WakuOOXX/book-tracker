@@ -32,9 +32,9 @@ export function renderTopHeader(currentPathOverride) {
             ${NAV_ITEMS.map(item => {
               const active = isActive(item.hash, currentPath)
               return `<button
-                class="nav-btn px-3 py-1.5 rounded-lg text-sm transition-all select-none ${active ? 'bg-indigo-100 text-indigo-700 font-medium shadow-sm' : 'text-gray-500 hover:bg-gray-100'}"
+                class="nav-btn px-3 py-1.5 rounded-lg text-sm transition-all select-none relative ${active ? 'bg-indigo-100 text-indigo-700 font-medium shadow-sm' : 'text-gray-500 hover:bg-gray-100'}"
                 data-nav="${item.hash}"
-              >${item.icon} ${item.label}</button>`
+              >${item.icon} ${item.label}${active ? '<span class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-indigo-600 rounded-full"></span>' : ''}</button>`
             }).join('')}
           </nav>
         </div>
